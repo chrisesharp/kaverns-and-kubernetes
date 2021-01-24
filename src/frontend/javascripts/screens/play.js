@@ -25,7 +25,7 @@ class PlayScreen {
         this.map = game.getMap();
         this.player = game.getEntity();
         this.player.pos = game.getEntrance();
-        console.log("Entered play screen.");
+        console.log("Entered play screen at ",this.player.pos);
     }
 
     exit() { 
@@ -59,7 +59,8 @@ class PlayScreen {
         // let viewDist = this.player.getSightRadius();
         let viewDist = 10;
         let map = this.map;
-        map.getFov(level).compute(
+        let fov = map.getFov(level);
+        fov.compute(
             this.player.pos.x, this.player.pos.y, viewDist, 
             function(x, y, radius, visibility) {
                 let dist = (viewDist - radius)/viewDist;

@@ -83,29 +83,9 @@ class Game {
         return this.entrance;
     }
 
-    // move(direction) {
-    //     this.client.move(direction);
-    // }
-
-    // takeItem(item) {
-    //     this.client.takeItem(item);
-    // }
-
-    // dropItem(item) {
-    //     this.client.dropItem(item);
-    // }
-
-    // eat(item) {
-    //     this.client.eat(item);
-    // }
-
-    // wieldItem(item) {
-    //     this.client.wieldItem(item);
-    // }
-
-    // wearItem(item) {
-    //     this.client.wearItem(item);
-    // }
+    move(direction) {
+        this.client.move(direction);
+    }
 
     getEntityAt(x, y, z) {
         return this.client.getEntityAt(x, y, z);
@@ -163,6 +143,7 @@ class Game {
                 this.mapAvailable(data);
             }
         }
+        
         this.display.clear();
         if (this.currentScreen) {
             this.currentScreen.render(this.display);

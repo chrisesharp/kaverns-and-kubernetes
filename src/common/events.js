@@ -14,7 +14,7 @@ export const EVENTS = {
     // eat: 'eat',
     // wear: 'wear',
     // wield: 'wield',
-    // move: 'move',
+    move: 'move',
     disconnect: 'disconnect' ,
     message: 'message',
     // dead: 'dead',

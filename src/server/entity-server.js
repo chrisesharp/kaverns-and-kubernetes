@@ -1,9 +1,12 @@
 "use strict";
 
 import { EVENTS } from "../common/events.js";
+import { getMovement } from "../common/movement.js";
+import { MSGTYPE, Messages } from "./messages.js";
 import State from "./state.js";
 import Cave from "./cave.js";
 import EntityFactory from "./entity-factory.js";
+import { Tiles } from "./server-tiles.js";
 
 export default class EntityServer {
     constructor(backend, template) {
@@ -28,7 +31,14 @@ export default class EntityServer {
 
     deleteEntity(entity) {
         if (this.entities.getEntity(entity.id)) {
-           this.entities.removeEntity(entity);
+            // let gear = entity.getInventory();
+            // gear.forEach((item) => {
+            //     this.dropItem(entity, item.name);
+            // });
+            // this.dropItem(entity, entity.corpse);
+            this.messaging.sendToAll(EVENTS.delete, entity.pos);
+            this.messaging.sendToAll(EVENTS.message, Messages.LEFT_DUNGEON(entity.describeA()));
+            this.entities.removeEntity(entity);
         }
     }
 
@@ -48,6 +58,59 @@ export default class EntityServer {
         let map = this.cave.getMap();
         map.entrance = entity.entrance;
         return map;
+    }
+
+    moveEntity(entity, direction) {
+        let delta = getMovement(direction);
+        let position = (entity.isAlive()) ? this.tryMove(entity, delta) : null;
+        if (position) {
+            entity.pos = position;
+            this.messaging.sendToAll(EVENTS.position, entity.getPos());
+        }
+        return position;
+    }
+
+    tryMove(entity, delta) {
+        let x = entity.pos.x + delta.x;
+        let y = entity.pos.y + delta.y;
+        let z = entity.pos.z + delta.z;
+        let newPos = {x:x, y:y, z:z};
+        let tile = this.cave.getMap().getTile(x, y, entity.pos.z);
+
+        let target = this.entities.getEntityAt(newPos);
+        if (target) {
+            entity.handleCollision(target);
+            return null;
+        }
+        
+        if (tile.isWalkable()) {
+            if (z !== entity.pos.z) {
+                return this.levelChange(entity, newPos, tile);
+            }
+
+            let items = this.cave.getItemsAt(newPos);
+            if (items.length > 0) {
+                entity.handleCollision(items);
+            }
+            return newPos;
+        }
+        this.sendMessage(entity, MSGTYPE.INF, Messages.NO_WALK(entity));
+        return null;
+    }
+
+    levelChange(entity, newPos, tile) {
+        if (newPos.z < entity.pos.z && tile === Tiles.stairsUpTile) {
+            this.sendMessage(entity, MSGTYPE.INF, Messages.ASCEND([newPos.z]));
+            return newPos;
+        }
+
+        if (newPos.z > entity.pos.z && tile === Tiles.stairsDownTile) {
+            this.sendMessage(entity, MSGTYPE.INF, Messages.DESCEND([newPos.z]));
+            return newPos;
+        } 
+        
+        this.sendMessage(entity, MSGTYPE.INF, Messages.NO_CLIMB(entity));
+        return null;
     }
 
     sendMessage(entity, ...message) {
