@@ -13,6 +13,10 @@ export default class Map {
         this.fov = template.fov;
     }
 
+    getEntrance() {
+        return this.entrance;
+    }
+
     getWidth() {
         return this.width;
     }
@@ -21,11 +25,18 @@ export default class Map {
         return this.height;
     }
 
+    getDepth() {
+        return this.depth;
+    }
+
     getTile(x, y, z) {
-        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
-            return nullTile;
-        } else {
-            return new Tile(this.tiles[z][y][x]);
+        if (this.withinBounds(x, y, z)) {
+            return (this.tiles[z][y][x] instanceof Tile) ? (this.tiles[z][y][x]) : new Tile((this.tiles[z][y][x]));
         }
+        return nullTile;
+    }
+
+    withinBounds(x, y, z) {
+        return !(x < 0 || y < 0 || z < 0 || x >= this.width || y >= this.height || z >= this.depth);
     }
 }

@@ -1,5 +1,6 @@
 "use strict";
 
+import Map from "../common/map.js"
 import { Tiles } from "./server-tiles.js";
 import { Generators } from "./generators/index.js";
 
@@ -7,16 +8,14 @@ function dynamicGenerator(generator) {
     return Generators[generator] || Generators["FileGenerator"]
 }
 
-export default class MapBuilder {
-    constructor(generator, width, height, depth, randomized, regionSize, template) {
-        this.regionSize = regionSize;
-        this.randomized = randomized;
-        this.width = width;
-        this.height = height;
-        this.depth = depth;
+export default class MapBuilder  extends Map {
+    constructor(template) {
+        super(template);
+        this.regionSize = template.regionSize;
+        this.randomized = template.randomiser;
         this.tiles = new Array(this.depth);
-        this.regions = new Array(depth);
-        this.generator = MapBuilder.createGenerator(generator, width, height, template);
+        this.regions = new Array(this.depth);
+        this.generator = MapBuilder.createGenerator(template.generator, this.width, this.height, template);
         this.fov = [];
     }
 
@@ -50,22 +49,6 @@ export default class MapBuilder {
         return this.tiles;
     }
 
-    getDepth() {
-        return this.depth;
-    }
-
-    getWidth() {
-        return this.width;
-    }
-
-    getHeight() {
-        return this.height;
-    }
-
-    getTile(x, y, z) {
-        return (this.withinBounds(x, y, z)) ? this.tiles[z][y][x] : Tiles.nullTile;
-    }
-
     setupRegions(z) {
         let region = 1;
         for (let x = 0; x < this.width; x++) {
@@ -83,13 +66,9 @@ export default class MapBuilder {
 
     canFillRegion(x, y, z) {
         return false;
-        return (this.withinBounds(x, y, z) && 
-                (!this.regions[z][y][x]) && 
-                this.tiles[z][y][x].isWalkable());
-    }
-
-    withinBounds(x, y, z) {
-        return !(x < 0 || y < 0 || z < 0 || x >= this.width || y >= this.height || z >= this.depth);
+        // return (this.withinBounds(x, y, z) && 
+        //         (!this.regions[z][y][x]) && 
+        //         this.tiles[z][y][x].isWalkable());
     }
 
     fillRegion(region, x, y, z) {

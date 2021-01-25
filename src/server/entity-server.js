@@ -31,11 +31,6 @@ export default class EntityServer {
 
     deleteEntity(entity) {
         if (this.entities.getEntity(entity.id)) {
-            // let gear = entity.getInventory();
-            // gear.forEach((item) => {
-            //     this.dropItem(entity, item.name);
-            // });
-            // this.dropItem(entity, entity.corpse);
             this.messaging.sendToAll(EVENTS.delete, entity.pos);
             this.messaging.sendToAll(EVENTS.message, Messages.LEFT_DUNGEON(entity.describeA()));
             this.entities.removeEntity(entity);

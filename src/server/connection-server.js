@@ -32,18 +32,6 @@ export default class ConnectionServer {
         this.registerEventHandlers(socket, entity, server);
         this.messaging.sendToAll(EVENTS.entities, server.getEntities());
         this.enterRoom(socket, entity, server.getRoom(entity.pos));
-        return entity;
-    }
-
-    enterRoom(socket, entity, room) {
-        socket.join(room);
-        socket.broadcast.to(room).emit(EVENTS.message, Messages.ENTER_ROOM(entity.describeA()));
-        socket.emit(EVENTS.items, this.entityServer.getItemsForRoom(entity.pos));
-    }
-
-    stop() {
-        this.messaging.stop();
-        this.open = false;
     }
 
     registerEventHandlers(socket, entity, server) {
@@ -76,11 +64,6 @@ export default class ConnectionServer {
         });
     }
 
-    moveRooms(socket, entity, startRoom) {
-        this.leaveRoom(socket, entity, startRoom);
-        this.enterRoom(socket, entity, this.entityServer.getRoom(entity.pos));
-    }
-
     enterRoom(socket, entity, room) {
         socket.join(room);
         socket.broadcast.to(room).emit(EVENTS.message, Messages.ENTER_ROOM(entity.describeA()));
@@ -91,6 +74,16 @@ export default class ConnectionServer {
         socket.leave(room, () => {
             this.messaging.sendMessageToRoom(room, Messages.LEAVE_ROOM(entity.describeA()));
         });
+    }
+
+    moveRooms(socket, entity, startRoom) {
+        this.leaveRoom(socket, entity, startRoom);
+        this.enterRoom(socket, entity, this.entityServer.getRoom(entity.pos));
+    }
+
+    stop() {
+        this.messaging.stop();
+        this.open = false;
     }
 
     reset(properties) {
