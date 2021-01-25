@@ -1,6 +1,5 @@
 "use strict";
 
-import { Server } from "socket.io";
 import EntityServer from "./entity-server.js";
 import { EVENTS } from "../common/events.js";
 import { Messages } from "./messages.js";
@@ -10,10 +9,11 @@ export default class ConnectionServer {
     constructor(http, template) {
         this.template = template;
         this.open = true;
-        this.backend = new Server(http);
-        this.backend.on("connection", (socket) => { this.connection(socket); });
-        this.messaging = null;
-        this.messaging = new Messaging(this.backend);
+        const thisServer = this;
+        let callback = (socket) => {
+            thisServer.connection(socket);
+        }
+        this.messaging = new Messaging(http, callback);
         this.entityServer = new EntityServer(this.messaging, template);
     }
 
@@ -44,7 +44,6 @@ export default class ConnectionServer {
 
     stop() {
         this.messaging.stop();
-        this.backend.close();
         this.open = false;
     }
 
