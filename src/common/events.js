@@ -9,18 +9,11 @@ export const EVENTS = {
     items: 'items',
     position: 'position',
     map: 'map',
-    // take: 'take',
-    // drop: 'drop',
-    // eat: 'eat',
-    // wear: 'wear',
-    // wield: 'wield',
     move: 'move',
     disconnect: 'disconnect' ,
     message: 'message',
-    // dead: 'dead',
     update: 'update',
     delete: 'delete',
-    // ping: 'ping',
     missingRole: 'missing_role',
     reset: 'reset'
 }

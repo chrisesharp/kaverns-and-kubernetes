@@ -1,5 +1,6 @@
 "use strict";
 
+import Glyph from '../../../common/glyph.js';
 import { Color } from '../display.js';
 import { game } from '../game.js';
 import { getHandler, isReturnKey } from '../keys.js';
@@ -78,7 +79,7 @@ class PlayScreen {
                     let glyph = this.getColouredGlyph(map, visibleCells, x, y, z);
                     display.draw(x - topLeft.x,
                                  y - topLeft.y, 
-                                 glyph.char, glyph.foreground, glyph.background);
+                                 glyph.getChar(), glyph.getForeground(), glyph.getBackground());
                 }
             }
         }
@@ -94,13 +95,13 @@ class PlayScreen {
                 glyph = items.slice(-1)[0];
             }
             if (game.getEntityAt(x, y, z)) {
-                glyph = game.getEntityAt(x, y, z).getGlyph();
+                glyph = game.getEntityAt(x, y, z);
             }
 
             let itemColour = Color.fromString(glyph.getForeground());
             foreground = Color.interpolate(foreground, itemColour, visibility);
         }
-        return {"char": glyph.getChar(), "foreground":Color.toRGB(foreground),"background":glyph.getBackground()};
+        return new Glyph({"char": glyph.getChar(), "foreground":Color.toRGB(foreground),"background":glyph.getBackground()});
     }
 
     renderMessages() {

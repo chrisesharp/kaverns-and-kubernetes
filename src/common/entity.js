@@ -11,7 +11,7 @@ export default class Entity extends Item {
         this.name = properties['name'] || "anonymous";
         this.role = properties['role'] || "unknown";
         this.type = properties['type'];
-        if (this.char === ' ') { 
+        if (this.getChar() === ' ') { 
             this.setGlyph({'char':"?"});
         }
     }
@@ -25,9 +25,6 @@ export default class Entity extends Item {
     }
 
     isAlive() {
-        if (this.hitPoints <=0) {
-            this.alive = false;
-        }
         return this.alive;
     }
 }
