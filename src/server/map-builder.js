@@ -41,14 +41,6 @@ export default class MapBuilder  extends Map {
         return this;
     }
 
-    addTile(x, y, z, tile) {
-        this.tiles[z][y][x] = tile;
-    }
-
-    getTiles () {
-        return this.tiles;
-    }
-
     setupRegions(z) {
         let region = 1;
         for (let x = 0; x < this.width; x++) {
