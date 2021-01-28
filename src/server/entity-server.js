@@ -15,7 +15,7 @@ export default class EntityServer {
         this.cave = new Cave(template);
         this.repo = new EntityFactory(this);
         this.entities = new State(this.repo);
-        this.connectGateways();
+        this.connectGateways(template.gateways);
     }
 
     connectGateways(urls) {

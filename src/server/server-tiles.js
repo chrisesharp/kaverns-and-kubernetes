@@ -34,5 +34,15 @@ export const stairsDownTile = new Tile({
     description: 'A rock staircase leading downwards'
 });
 
+export const gateTile = new Tile({
+    char: '*',
+    foreground: 'black',
+    background: 'white',
+    walkable: true,
+    blocksLight: true,
+    gateway: true,
+    description: 'A gateway to another realm'
+});
+
 import * as Tiles from "./server-tiles.js";
 export { Tiles };

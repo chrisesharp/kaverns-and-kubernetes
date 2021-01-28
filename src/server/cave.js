@@ -18,6 +18,7 @@ export default class Cave {
     constructor(template=DEFAULT_SIZE) {
         this.map = Cave.builder(template).generate();
         this.entrance = template.entrance;
+        this.gateways = {};
         this.items = {};
         this.itemRepos = this.createRepos(template);
         this.distributeItems(this.map);
@@ -60,6 +61,18 @@ export default class Cave {
 
     getGatewayPositions() {
         return this.map.getGateways();
+    }
+
+    addGateway(properties) {
+        let pos = properties.pos;
+        let url = properties.url;
+        if (pos && url) {
+            this.gateways[this.key(pos)] = properties;
+        }
+    }
+
+    getGateway(pos) {
+        return this.gateways[this.key(pos)];
     }
 
     key(pos) {
