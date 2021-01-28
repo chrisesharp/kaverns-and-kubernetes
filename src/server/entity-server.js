@@ -13,8 +13,24 @@ export default class EntityServer {
         this.template = template;
         this.messaging = backend;
         this.cave = new Cave(template);
-        this.repo = new EntityFactory();
-        this.reset();
+        this.repo = new EntityFactory(this);
+        this.entities = new State(this.repo);
+        this.connectGateways();
+    }
+
+    connectGateways(urls) {
+        urls = urls || [];
+        let index = 0;
+        if (urls.length > 0) {
+            let gatesByLevel = this.cave.getGatewayPositions();
+            Object.keys(gatesByLevel).forEach((key) => {
+                gatesByLevel[key].forEach((pos) => {
+                    let url = urls[index];
+                    this.cave.addGateway({pos:pos, url:url})
+                    index = (index + 1) % urls.length;
+                });
+            });
+        }
     }
 
     createEntity(id, prototype) {
@@ -83,6 +99,10 @@ export default class EntityServer {
                 return this.levelChange(entity, newPos, tile);
             }
 
+            if (tile.isGateway()) {
+                return this.passGateway(entity, newPos);
+            }
+
             let items = this.cave.getItemsAt(newPos);
             if (items.length > 0) {
                 entity.handleCollision(items);
@@ -91,6 +111,15 @@ export default class EntityServer {
         }
         this.sendMessage(entity, MSGTYPE.INF, Messages.NO_WALK(entity));
         return null;
+    }
+
+    passGateway(entity, pos) {
+        let gw = this.cave.getGateway(pos);
+        if (gw) {
+            this.sendMessage(entity, MSGTYPE.UPD, Messages.TELEPORT());
+            this.messaging.sendMessageToEntity(entity, EVENTS.reconnect, {url:gw.url});
+            this.deleteEntity(entity);
+        }
     }
 
     levelChange(entity, newPos, tile) {

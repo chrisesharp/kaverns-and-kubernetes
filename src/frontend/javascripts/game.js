@@ -138,7 +138,7 @@ class Game {
             properties = this.updateName();
             properties.type = "player";
         }
-        monitor2.setServerURL(`${properties.url}/health`);
+        backendMonitor.setServerURL(`${properties.url}/health`);
         this.client.connectToServer(properties);
     }
 
@@ -250,15 +250,15 @@ const caveURL = document.getElementsByClassName('cave')[0];
 const name = document.getElementById('name');
 const messages = document.getElementById('messages');
 const messagePrototype = document.getElementsByClassName('message')[0];
-const status1 = document.getElementById('status1');
-const status2 = document.getElementById('status2');
-const monitor1 = new ServerHealth("Front-End", `${BASE_URL}/health`);
-const monitor2 = new ServerHealth("Back-End", `${BASE_URL}/health`);
+const status1 = document.getElementById('frontend-status');
+const status2 = document.getElementById('backend-status');
+const frontendMonitor = new ServerHealth("Front-End", `${BASE_URL}/health`);
+const backendMonitor = new ServerHealth("Back-End", `${BASE_URL}/health`);
 
 window.onload =  async () => {
     playfield.appendChild(game.getDisplay().getContainer());
-    monitor1.initServerHealth(status1);
-    monitor2.initServerHealth(status2);
+    frontendMonitor.initServerHealth(status1);
+    backendMonitor.initServerHealth(status2);
     game.initRoles(roleField, rolePrototype);
     game.initCaves(caveField, caveURL);
     name.querySelector("#name_input").focus();

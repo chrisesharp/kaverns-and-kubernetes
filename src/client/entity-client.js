@@ -31,7 +31,10 @@ export default class EntityClient {
         this.socket.emit(EVENTS.getMap);
     }
 
-    disconnectFromServer() {
+    disconnectFromServer(event) {
+        if (event) {
+            this.socket.emit(event)
+        }
         this.socket.disconnect();
     }
 
@@ -68,16 +71,21 @@ export default class EntityClient {
             callback(EVENTS.update);
         });
 
-        // socket.on(EVENTS.dead, (entity) => {
-        //     this.state.updateOurself(entity);
-        //     callback(EVENTS.dead);
-        // });
+        socket.on(EVENTS.dead, (entity) => {
+            this.state.updateOurself(entity);
+            callback(EVENTS.dead);
+        });
 
         socket.on(EVENTS.position, (event) => {
             if (!this.state.updateEntityPosition(socket.id, event)) {
                 this.sync();
             }
             callback(EVENTS.position, event);
+        });
+
+        socket.on(EVENTS.reconnect, (properties) => {
+            this.reconnect(properties);
+            callback(EVENTS.reconnect);
         });
 
         socket.on(EVENTS.reset, (properties) => {

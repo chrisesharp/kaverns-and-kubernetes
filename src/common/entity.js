@@ -27,4 +27,8 @@ export default class Entity extends Item {
     isAlive() {
         return this.alive;
     }
+
+    kill() {
+        this.alive = false;
+    }
 }

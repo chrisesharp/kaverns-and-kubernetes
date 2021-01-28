@@ -58,6 +58,10 @@ export default class Cave {
         return (this.entrance) ? this.entrance : this.map.getEntrance(level);
     }
 
+    getGatewayPositions() {
+        return this.map.getGateways();
+    }
+
     key(pos) {
         return'(' + pos.x + ',' + pos.y + ',' + pos.z + ')';
     }

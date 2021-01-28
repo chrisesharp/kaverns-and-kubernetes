@@ -59,6 +59,10 @@ export default class ConnectionServer {
             }
         });
 
+        socket.on(EVENTS.dead, () => {
+            entity.kill();
+        });
+
         socket.on(EVENTS.disconnect, (reason) => {
             server.deleteEntity(entity);
         });
